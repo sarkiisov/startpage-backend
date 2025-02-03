@@ -1,0 +1,21 @@
+{
+  "name": "startpage-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/got": "^9.6.12",
+    "@types/node": "^22.13.0",
+    "express": "^4.21.2",
+    "got": "^14.4.5",
+    "typescript": "^5.7.3"
+  }
+}
