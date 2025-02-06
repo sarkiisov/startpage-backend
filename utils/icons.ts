@@ -1,7 +1,9 @@
 import { JSDOM } from 'jsdom'
 import { getDomainName } from './url.js'
 
-export const getAppleTouchIconUrl = async (url: string): Promise<string> => {
+type IconFetcher = (url: string) => Promise<string>
+
+const getAppleTouchIconUrl: IconFetcher = async (url) => {
   const text = await fetch(url, { redirect: 'follow' }).then((response) => response.text())
 
   const { document } = new JSDOM(text).window
@@ -18,7 +20,7 @@ export const getAppleTouchIconUrl = async (url: string): Promise<string> => {
   return href.startsWith('/') ? `${origin}${href}` : href
 }
 
-export const getAppStoreIconUrl = async (url: string): Promise<string> => {
+const getAppStoreIconUrl: IconFetcher = async (url) => {
   const search = getDomainName(url)
 
   const text = await fetch(`https://www.apple.com/us/search/${search}?src=globalnav`).then(
@@ -30,8 +32,29 @@ export const getAppStoreIconUrl = async (url: string): Promise<string> => {
   const image = document.querySelector('.rf-serp-explore-image') as HTMLImageElement
 
   if (!image) {
-    throw new Error('App store app icon was not found')
+    throw new Error('App Store app icon was not found')
   }
 
   return image.getAttribute('src')
 }
+
+const getPlayMarketIconUrl: IconFetcher = async (url) => {
+  const search = getDomainName(url)
+
+  const text = await fetch(`https://play.google.com/store/search?q=${search}&c=apps&hl=en`).then(
+    (response) => response.text()
+  )
+
+  const { document } = new JSDOM(text).window
+
+  const image = document.querySelector(`img[alt="Icon image"]`) as HTMLImageElement
+
+  if (!image) {
+    throw new Error('Play Market icon was not found')
+  }
+
+  return image.getAttribute('src')
+}
+
+export const getIconFethers = (url: string): ReturnType<IconFetcher>[] =>
+  [getAppleTouchIconUrl, getAppStoreIconUrl, getPlayMarketIconUrl].map((func) => func(url))

@@ -3,7 +3,7 @@ import cors from 'cors'
 
 import { Icon } from './utils/db.js'
 import { dataURItoBlob, URLtoDataURI } from './utils/download.js'
-import { getAppleTouchIconUrl, getAppStoreIconUrl } from './utils/icons.js'
+import { getIconFethers } from './utils/icons.js'
 import { queryValidator } from './utils/middlewares.js'
 import { envSchema, faviconsQuerySchema } from './utils/validators.js'
 
@@ -21,7 +21,7 @@ app.get('/favicons', queryValidator(faviconsQuerySchema), async (req, res) => {
   let iconIds = await Icon.findAll({ where: { origin }, attributes: ['id'] })
 
   if (!iconIds.length) {
-    const icons = (await Promise.allSettled([getAppleTouchIconUrl(href), getAppStoreIconUrl(href)]))
+    const icons = (await Promise.allSettled(getIconFethers(href)))
       .filter((result) => result.status === 'fulfilled')
       .map((result) => result.value)
 
