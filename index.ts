@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { dataURItoBlob, URLtoDataURI } from './utils/download.js'
 import { getAppleTouchIconUrl, getAppStoreIconUrl } from './utils/icons.js'
-import { getFileById, getFilesByOrigin, saveFiles } from './utils/db.js'
+import { Icon } from './utils/db.js'
 
 const app = express()
 const port = 3000
@@ -14,25 +14,32 @@ app.get('/favicons', async (req, res) => {
 
   const { origin, href } = new URL(url)
 
-  let files = getFilesByOrigin(origin)
+  let iconIds = await Icon.findAll({ where: { origin }, attributes: ['id'] })
 
-  if (!files.length) {
+  if (!iconIds.length) {
     const icons = (await Promise.allSettled([getAppleTouchIconUrl(href), getAppStoreIconUrl(href)]))
       .filter((result) => result.status === 'fulfilled')
       .map((result) => result.value)
 
-    saveFiles(origin, await Promise.all(icons.map(URLtoDataURI)))
+    const dataURIs = await Promise.all(icons.map(URLtoDataURI))
 
-    files = getFilesByOrigin(origin)
+    await Icon.bulkCreate(dataURIs.map((dataURI) => ({ origin, dataURI })))
+
+    iconIds = await Icon.findAll({ where: { origin }, attributes: ['id'] })
   }
 
-  res.json(files.map((file) => file.id))
+  const flattenIconIds = iconIds.map(({ id }) => id)
+
+  res.json(flattenIconIds)
 })
 
 app.get('/files/:id', async (req, res) => {
   const { id } = req.params
 
-  const { dataURI } = getFileById(parseInt(id))
+  const { dataURI } = await Icon.findOne({
+    where: { id },
+    attributes: ['dataURI']
+  })
 
   const blob = dataURItoBlob(dataURI)
 

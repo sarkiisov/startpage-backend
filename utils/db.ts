@@ -1,39 +1,46 @@
-import { DatabaseSync } from 'node:sqlite'
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  Sequelize
+} from 'sequelize'
 
-const db = new DatabaseSync('database.db')
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'database.db'
+})
 
-db.exec(`CREATE TABLE IF NOT EXISTS files (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  createdAt TEXT,
-  origin TEXT,
-  dataURI string
-)`)
+class Icon extends Model<InferAttributes<Icon>, InferCreationAttributes<Icon>> {
+  declare id: CreationOptional<number>
 
-type DBFile = {
-  id: number
-  createdAt: string
-  origin: string
-  dataURI: string
+  declare origin: string
+  declare dataURI: string
+
+  declare createdAt: CreationOptional<Date>
 }
 
-export const saveFile = (origin: string, dataURI: string) => {
-  const insert = db.prepare(`INSERT INTO files (createdAt, origin, dataURI) VALUES (?, ?, ?)`)
+Icon.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    origin: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    dataURI: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    createdAt: DataTypes.DATE
+  },
+  { sequelize, timestamps: true, createdAt: true, updatedAt: false }
+)
 
-  insert.run(new Date().toISOString(), origin, dataURI)
-}
+await sequelize.sync({ alter: true })
 
-export const saveFiles = (origin: string, dataURIs: string[]) => {
-  dataURIs.forEach((file) => saveFile(origin, file))
-}
-
-export const getFilesByOrigin = (origin: string) => {
-  const query = db.prepare(`SELECT * FROM files WHERE origin = '${origin}'`)
-
-  return query.all() as DBFile[]
-}
-
-export const getFileById = (id: number) => {
-  const query = db.prepare(`SELECT * FROM files WHERE id = ${id}`)
-
-  return query.get() as DBFile | undefined
-}
+export { Icon }
