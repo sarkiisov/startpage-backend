@@ -1,15 +1,19 @@
 import express from 'express'
 import cors from 'cors'
+
+import { Icon } from './utils/db.js'
 import { dataURItoBlob, URLtoDataURI } from './utils/download.js'
 import { getAppleTouchIconUrl, getAppStoreIconUrl } from './utils/icons.js'
-import { Icon } from './utils/db.js'
+import { queryValidator } from './utils/middlewares.js'
+import { envSchema, faviconsQuerySchema } from './utils/validators.js'
+
+export const { PORT } = envSchema.parse(process.env)
 
 const app = express()
-const port = 3000
 
 app.use(cors())
 
-app.get('/favicons', async (req, res) => {
+app.get('/favicons', queryValidator(faviconsQuerySchema), async (req, res) => {
   const { url } = req.query as { url: string }
 
   const { origin, href } = new URL(url)
@@ -21,7 +25,9 @@ app.get('/favicons', async (req, res) => {
       .filter((result) => result.status === 'fulfilled')
       .map((result) => result.value)
 
-    const dataURIs = await Promise.all(icons.map(URLtoDataURI))
+    const dataURIs = (await Promise.allSettled(icons.map(URLtoDataURI)))
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => result.value)
 
     await Icon.bulkCreate(dataURIs.map((dataURI) => ({ origin, dataURI })))
 
@@ -49,6 +55,6 @@ app.get('/files/:id', async (req, res) => {
   })
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`)
 })
