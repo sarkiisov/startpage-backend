@@ -12,7 +12,7 @@ Backend for [startpage-frontend](https://github.com/sarkiisov/startpage-frontend
 
 ## Installation & usage
 
-1. Install pnpm (Package manager)
+1. Install pnpm (package manager)
 
    https://pnpm.io/installation
 
