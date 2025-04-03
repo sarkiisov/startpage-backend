@@ -1,6 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 
+import swaggerUi from 'swagger-ui-express'
+import swaggerDocument from './swagger.json' with { type: 'json' }
+
 import { Icon } from './utils/db.js'
 import { dataURItoBlob, URLtoDataURI } from './utils/download.js'
 import { getIconFethers } from './utils/icons.js'
@@ -12,6 +15,7 @@ export const { PORT } = envSchema.parse(process.env)
 const app = express()
 
 app.use(cors())
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/favicons', queryValidator(faviconsQuerySchema), async (req, res) => {
   const { url } = req.query as { url: string }

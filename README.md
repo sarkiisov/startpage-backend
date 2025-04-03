@@ -25,6 +25,10 @@ Backend for [startpage-frontend](https://github.com/sarkiisov/startpage-frontend
    pnpm start
    ```
 
+## API Documentation
+
+API documentation is available under `/api-docs` using Swagger UI. You can use it to explore the available endpoints.
+
 ## Stack
 
 Express, TypeScript, SQLite3, HTMLParser2, JSdom
