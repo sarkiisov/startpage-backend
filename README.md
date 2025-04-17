@@ -28,7 +28,7 @@ Backend for [startpage-frontend](https://github.com/sarkiisov/startpage-frontend
    docker run -d --env-file .env -p <PORT>:<.env PORT> startpage-backend
    ```
 
-   - Replace <PORT> with the desired port number for your application.
+   - Replace `<PORT>` with the desired port number for your application.
 
 ### Standalone
 
