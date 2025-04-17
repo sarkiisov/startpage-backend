@@ -5,9 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "swagger": "node swagger",
-    "start": "npm run build && npm run swagger && node --env-file=.env dist"
+    "build": "tsc && node swagger",
+    "start": "node --env-file=.env dist"
   },
   "keywords": [],
   "author": "",
