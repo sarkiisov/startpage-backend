@@ -6,7 +6,7 @@ import swaggerDocument from './swagger.json' with { type: 'json' }
 
 import { Icon } from './utils/db.js'
 import { dataURItoBlob, URLtoDataURI } from './utils/download.js'
-import { getIconFethers } from './utils/icons.js'
+import { getIconFetchers } from './utils/icons.js'
 import { queryValidator } from './utils/middlewares.js'
 import { envSchema, faviconsQuerySchema } from './utils/validators.js'
 
@@ -25,7 +25,7 @@ app.get('/favicons', queryValidator(faviconsQuerySchema), async (req, res) => {
   let iconIds = await Icon.findAll({ where: { origin }, attributes: ['id'] })
 
   if (!iconIds.length) {
-    const icons = (await Promise.allSettled(getIconFethers(href)))
+    const icons = (await Promise.allSettled(getIconFetchers(href)))
       .filter((result) => result.status === 'fulfilled')
       .map((result) => result.value)
 

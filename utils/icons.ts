@@ -56,5 +56,5 @@ const getPlayMarketIconUrl: IconFetcher = async (url) => {
   return image.getAttribute('src')
 }
 
-export const getIconFethers = (url: string): ReturnType<IconFetcher>[] =>
+export const getIconFetchers = (url: string): ReturnType<IconFetcher>[] =>
   [getAppleTouchIconUrl, getAppStoreIconUrl, getPlayMarketIconUrl].map((func) => func(url))
