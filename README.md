@@ -1,5 +1,7 @@
 # Startpage backend
 
+> ⚠️ **Deprecated.** [startpage-frontend](https://github.com/sarkiisov/startpage-frontend) now fetches and converts favicons directly in the extension (via `host_permissions`), so this backend is no longer required.
+
 Backend for [startpage-frontend](https://github.com/sarkiisov/startpage-frontend) handles favicon fetching via web scraping and caches icons for optimized performance.
 
 ## Icon retrieval
